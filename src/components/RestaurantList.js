@@ -174,155 +174,173 @@ const restaurantMenus = {
       { id: 5, name: 'Pani Puri', price: 30 },
     ],
   };
-
-const RestaurantMenuApp = () => {
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [openMenuDialog, setOpenMenuDialog] = useState(false);
-  const [cart, setCart] = useState({});
-
-  const handleCityChange = (event) => {
-    setSelectedCity(event.target.value);
-    setSelectedRestaurant(null);
-    setCart({});
-  };
-
-  const handleRestaurantSelect = (restaurant) => {
-    setSelectedRestaurant(restaurant);
-    setOpenMenuDialog(true);
-    setCart({});
-  };
-
-  const handleCloseDialog = () => {
-    setOpenMenuDialog(false);
-  };
-
-  const handleAddToCart = (menuItem) => {
-    setCart((prevCart) => ({
-      ...prevCart,
-      [menuItem.id]: (prevCart[menuItem.id] || 0) + 1
-    }));
-  };
-
-  const handleRemoveFromCart = (menuItem) => {
-    setCart((prevCart) => {
-      const updatedQuantity = (prevCart[menuItem.id] || 1) - 1;
-      if (updatedQuantity > 0) {
-        return { ...prevCart, [menuItem.id]: updatedQuantity };
-      } else {
-        const { [menuItem.id]: _, ...rest } = prevCart;
-        return rest;
-      }
-    });
-  };
-
-  const calculateTotalBill = () => {
-    if (!selectedRestaurant) return 0;
-    return Object.keys(cart).reduce((total, itemId) => {
-      const menuItem = restaurantMenus[selectedRestaurant.id]?.find(
-        (item) => item.id === parseInt(itemId)
-      );
-      return total + (menuItem ? menuItem.price * cart[itemId] : 0);
-    }, 0);
-  };
-
-  const renderRestaurants = () => {
-    if (!selectedCity) return null;
-    return restaurantsData[selectedCity]?.map((restaurant) => (
-      <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
-        <Card>
-          <CardContent>
-            <Typography variant="h5">{restaurant.name}</Typography>
-            <Typography variant="body2">Rating: {restaurant.rating}</Typography>
-            <Typography variant="body2">Price: ₹{restaurant.price}</Typography>
-            <Typography variant="body2">Delivery Time: {restaurant.deliveryTime}</Typography>
-            <Typography variant="body2">Offer: {restaurant.offer}</Typography>
-            <Button
-              variant="contained"
-              onClick={() => handleRestaurantSelect(restaurant)}
-              style={{ marginTop: '10px', backgroundColor: '#ffc93c', color: 'black' }} 
-            >
-              View Menu
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
-    ));
-  };
-
-  const totalBill = calculateTotalBill();
-
-  const handleCheckout = () => {
-    alert('Proceeding to payment!');
-    // Here you can integrate the payment gateway
-  };
-
-  return (
-    <Box sx={{ padding: 3 }}>
-      <FormControl fullWidth variant="outlined" sx={{ marginBottom: 3 }}>
-        <InputLabel id="city-select-label">Select City</InputLabel>
-        <Select
-          labelId="city-select-label"
-          value={selectedCity}
-          onChange={handleCityChange}
-          label="Select City"
-        >
-          {Object.keys(restaurantsData).map((city) => (
-            <MenuItem key={city} value={city}>
-              {city}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <Grid container spacing={2}>{renderRestaurants()}</Grid>
-
-      <Dialog open={openMenuDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Menu for {selectedRestaurant?.name}</DialogTitle>
-        <DialogContent>
-          {selectedRestaurant && restaurantMenus[selectedRestaurant.id] ? (
-            restaurantMenus[selectedRestaurant.id].map((menuItem) => (
-              <Box
-                key={menuItem.id}
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+  const RestaurantMenuApp = () => {
+    const [selectedCity, setSelectedCity] = useState('');
+    const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+    const [openMenuDialog, setOpenMenuDialog] = useState(false);
+    const [cart, setCart] = useState({});
+  
+    const navigate = useNavigate(); // Initialize navigate function
+    
+    // Handle city selection
+    const handleCityChange = (event) => {
+      setSelectedCity(event.target.value);
+      setSelectedRestaurant(null);
+      setCart({});
+    };
+  
+    // Handle restaurant selection
+    const handleRestaurantSelect = (restaurant) => {
+      setSelectedRestaurant(restaurant);
+      setOpenMenuDialog(true);
+      setCart({});
+    };
+  
+    // Close menu dialog
+    const handleCloseDialog = () => {
+      setOpenMenuDialog(false);
+    };
+  
+    // Add menu item to cart
+    const handleAddToCart = (menuItem) => {
+      setCart((prevCart) => ({
+        ...prevCart,
+        [menuItem.id]: (prevCart[menuItem.id] || 0) + 1,
+      }));
+    };
+  
+    // Remove menu item from cart
+    const handleRemoveFromCart = (menuItem) => {
+      setCart((prevCart) => {
+        const updatedQuantity = (prevCart[menuItem.id] || 1) - 1;
+        if (updatedQuantity > 0) {
+          return { ...prevCart, [menuItem.id]: updatedQuantity };
+        } else {
+          const { [menuItem.id]: _, ...rest } = prevCart;
+          return rest;
+        }
+      });
+    };
+  
+    // Calculate total bill
+    const calculateTotalBill = () => {
+      if (!selectedRestaurant) return 0;
+      return Object.keys(cart).reduce((total, itemId) => {
+        const menuItem = restaurantMenus[selectedRestaurant.id]?.find(
+          (item) => item.id === parseInt(itemId)
+        );
+        return total + (menuItem ? menuItem.price * cart[itemId] : 0);
+      }, 0);
+    };
+  
+    // Render restaurants based on selected city
+    const renderRestaurants = () => {
+      if (!selectedCity) return null;
+      return restaurantsData[selectedCity]?.map((restaurant) => (
+        <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5">{restaurant.name}</Typography>
+              <Typography variant="body2">Rating: {restaurant.rating}</Typography>
+              <Typography variant="body2">Price: ₹{restaurant.price}</Typography>
+              <Typography variant="body2">Delivery Time: {restaurant.deliveryTime}</Typography>
+              <Typography variant="body2">Offer: {restaurant.offer}</Typography>
+              <Button
+                variant="contained"
+                onClick={() => handleRestaurantSelect(restaurant)}
+                style={{ marginTop: '10px', backgroundColor: '#ffc93c', color: 'black' }}
               >
-                <Typography>{menuItem.name} - ₹{menuItem.price}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => handleRemoveFromCart(menuItem)}
-                    disabled={!cart[menuItem.id]}
-                  >
-                    -
-                  </Button>
-                  <Typography sx={{ mx: 1 }}>{cart[menuItem.id] || 0}</Typography>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => handleAddToCart(menuItem)}
-                  >
-                    +
-                  </Button>
-                </Box>
-              </Box>
-            ))
-          ) : (
-            <Typography>No menu available</Typography>
-          )}
-          <Typography variant="h6" sx={{ mt: 2 }}>Total: ₹{totalBill}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Close
-          </Button>
-          <Button onClick={handleCheckout} color="secondary" variant="contained">
-            Proceed to Checkout
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-  );
-};
-
-export default RestaurantMenuApp;
+                View Menu
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      ));
+    };
+  
+    // Handle checkout navigation
+    const handleCheckout = () => {
+      // Redirect to the payment page after clicking on Proceed to Checkout
+      navigate('/payment'); // This will take the user to the payment page
+    };
+  
+    // Calculate total bill for checkout
+    const totalBill = calculateTotalBill();
+  
+    return (
+      <Box sx={{ padding: 3 }}>
+        {/* City selection dropdown */}
+        <FormControl fullWidth variant="outlined" sx={{ marginBottom: 3 }}>
+          <InputLabel id="city-select-label">Select City</InputLabel>
+          <Select
+            labelId="city-select-label"
+            value={selectedCity}
+            onChange={handleCityChange}
+            label="Select City"
+          >
+            {Object.keys(restaurantsData).map((city) => (
+              <MenuItem key={city} value={city}>
+                {city}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+  
+        {/* Render the list of restaurants based on selected city */}
+        <Grid container spacing={2}>
+          {renderRestaurants()}
+        </Grid>
+  
+        {/* Menu dialog with restaurant menu */}
+        <Dialog open={openMenuDialog} onClose={handleCloseDialog}>
+          <DialogTitle>Menu for {selectedRestaurant?.name}</DialogTitle>
+          <DialogContent>
+            {selectedRestaurant && restaurantMenus[selectedRestaurant.id] ? (
+              <div>
+                {restaurantMenus[selectedRestaurant.id].map((menuItem) => (
+                  <Box key={menuItem.id} display="flex" justifyContent="space-between" marginBottom={1}>
+                    <Typography>{menuItem.name}</Typography>
+                    <Typography>₹{menuItem.price}</Typography>
+                    <Box display="flex" alignItems="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => handleRemoveFromCart(menuItem)}
+                        style={{ backgroundColor: '#ffc93c', color: 'black', marginRight: '10px' }}
+                      >
+                        -
+                      </Button>
+                      <Typography>{cart[menuItem.id] || 0}</Typography>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleAddToCart(menuItem)}
+                        style={{ backgroundColor: '#ffc93c', color: 'black', marginLeft: '10px' }}
+                      >
+                        +
+                      </Button>
+                    </Box>
+                  </Box>
+                ))}
+              </div>
+            ) : (
+              <Typography>No menu available</Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="primary">
+              Close
+            </Button>
+            <Button
+              onClick={handleCheckout}
+              color="primary"
+              disabled={totalBill <= 0}
+            >
+              Proceed to Checkout (₹{totalBill})
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    );
+  };
+  
+  export default RestaurantMenuApp;
+  

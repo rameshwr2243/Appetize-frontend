@@ -19,9 +19,11 @@ import DateTimeSelection from './components/DateTimeSelection';
 import { CartProvider } from './components/CartContext';
 import { AuthProvider, useAuth } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Logout from './components/Logout'; // Import Logout component
+import Logout from './components/Logout';
+import InitiatePayment from './components/Payment/InitiatePayment';  // Corrected import
 
-const App = () => {
+
+function App() {
     const [orders, setOrders] = useState([]);
     const location = useLocation();
     const { isAuthenticated } = useAuth();
@@ -54,7 +56,8 @@ const App = () => {
                             <Route path="/pre-ordering/date-time" element={<DateTimeSelection />} />
                             <Route path="/dining-options" element={<DiningOptions />} />
                             <Route path="/cook-list" element={<CookForm onSubmit={handleCookSubmit} />} />
-                            <Route path="/logout" element={<Logout />} /> {/* Add logout route */}
+                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/payment" element={<ProtectedRoute isAuthenticated={isAuthenticated}><InitiatePayment /></ProtectedRoute>} /> {/* Use InitiatePayment component */}
                         </Routes>
                     </Box>
                 </Box>
@@ -62,6 +65,6 @@ const App = () => {
             </CartProvider>
         </AuthProvider>
     );
-};
+}
 
 export default App;
