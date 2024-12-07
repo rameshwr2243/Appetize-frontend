@@ -37,26 +37,24 @@ const CookPortal = () => {
         }
     };
 
-    // Razorpay Payment Handler
     const handlePayment = (dish) => {
         const options = {
-            key: "YOUR_RAZORPAY_KEY_ID", // Replace with your Razorpay key ID
-            amount: dish.price * 100, // Razorpay works with paise; convert ₹ to paise
+            key: "YOUR_RAZORPAY_KEY_ID",
+            amount: dish.price * 100,
             currency: "INR",
             name: "Food Order Payment",
             description: `Payment for ${dish.dish}`,
-            image: "/path-to-your-logo.png", // Add a logo URL if available
+            image: "/path-to-your-logo.png",
             handler: (response) => {
-                // This function will be called when payment is successful
                 alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
             },
             prefill: {
-                name: "Customer Name", // You can pre-fill this
-                email: "customer@example.com", // Pre-fill customer email
-                contact: "9999999999", // Pre-fill customer contact number
+                name: "Customer Name",
+                email: "customer@example.com",
+                contact: "9999999999", 
             },
             theme: {
-                color: "#3399cc", // Customize payment window color
+                color: "#3399cc", 
             },
         };
 
