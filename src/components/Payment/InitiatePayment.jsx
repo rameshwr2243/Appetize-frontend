@@ -1,3 +1,5 @@
+/* global Razorpay */
+
 import React, { useState } from 'react';
 
 const InitiatePayment = () => {
@@ -6,14 +8,20 @@ const InitiatePayment = () => {
   const initiatePayment = async () => {
     try {
       // Step 1: Create order from backend
-      const response = await fetch("http://localhost:5000/api/payments/create-order", {
+      const response = await fetch("https://appetize.onrender.com/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }) // Send the amount
       });
       const order = await response.json();
 
-      // Step 2: Open Razorpay Checkout
+      // Step 2: Ensure Razorpay SDK is loaded
+      if (typeof Razorpay === "undefined") {
+        console.error("Razorpay SDK not loaded. Ensure it is included in your index.html file.");
+        return;
+      }
+
+      // Step 3: Open Razorpay Checkout
       const options = {
         key: "rzp_test_fCw6ls2A54GWKg", // Replace with your Razorpay key
         amount: order.amount,
@@ -30,9 +38,9 @@ const InitiatePayment = () => {
           color: "#F37254"
         },
         handler: async function (response) {
-          // Step 3: Verify payment
+          // Step 4: Verify payment
           const verificationResponse = await fetch(
-            "http://localhost:5000/api/payments/verify-payment",
+            "https://appetize.onrender.com/api/payments/verify-payment",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

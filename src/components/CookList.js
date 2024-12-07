@@ -28,7 +28,7 @@ const CookList = ({ cookDetailsList }) => {
                             <Button
                                 size="small"
                                 sx={{
-                                    backgroundColor: '#ffc93c', 
+                                    backgroundColor: '#ffc93c',
                                     color: '#000',
                                     '&:hover': {
                                         backgroundColor: '#ffb300',
