@@ -1,11 +1,25 @@
 /* global Razorpay */
-
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const InitiatePayment = () => {
   const [amount, setAmount] = useState(500); // Example amount in INR
+  const history = useHistory(); // To redirect user if not authenticated
 
+  // Check if the user is authenticated
+  const isAuthenticated = () => {
+    const token = localStorage.getItem("authToken");
+    return !!token; // Returns true if the token exists
+  };
+
+  // Function to initiate payment
   const initiatePayment = async () => {
+    if (!isAuthenticated()) {
+      // Redirect to login page if not authenticated
+      window.location.href = "/login"; // Direct user to login page
+      return;
+    }
+
     try {
       // Step 1: Create order from backend
       const response = await fetch("https://appetize.onrender.com/api/payments/create-order", {
